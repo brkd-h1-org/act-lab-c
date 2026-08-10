@@ -1,0 +1,26 @@
+name: trusted-main
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  trusted:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/probe
+      - name: identity + cache state
+        run: python3 forkprobe.py trusted
+      - name: seed trusted cache
+        run: |
+          mkdir -p trusted-data
+          echo "TRUSTED_MAIN_CACHE_CONTENT_c4a71f" > trusted-data/marker.txt
+      - uses: actions/cache/save@v4
+        continue-on-error: true
+        with:
+          path: trusted-data
+          key: trusted-cache-key
