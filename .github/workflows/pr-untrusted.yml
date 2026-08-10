@@ -1,0 +1,15 @@
+name: pr-untrusted
+on:
+  pull_request:
+
+jobs:
+  untrusted:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/probe
+      - name: identity + cross-scope cache attempts
+        run: python3 forkprobe.py untrusted
